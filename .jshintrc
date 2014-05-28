@@ -1,0 +1,17 @@
+{
+  "funcscope": true,
+  "undef": true,
+  "evil": true,
+  "unused": true,
+  "curly": true,
+  "eqeqeq": true,
+  "freeze": true,
+  "noarg": true,
+  "noempty": true,
+  "strict": true,
+  "indent": 2,
+  "trailing": true,
+  "maxdepth": 4,
+  "globalstrict": true,
+  "predef": [ "require", "module", "console", "__dirname", "process" ]
+}

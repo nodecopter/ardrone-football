@@ -1,0 +1,23 @@
+{
+  "name": "drone-soccer",
+  "version": "0.0.0",
+  "description": "NodeCopter Drone Soccer.",
+  "main": "app.js",
+  "dependencies": {
+    "dronestream": "^1.1.1",
+    "send": "^0.3.0",
+    "ws": "^0.4.31",
+    "ar-drone": "^0.3.2",
+    "shoe": "0.0.15",
+    "dnode": "^1.2.0"
+  },
+  "devDependencies": {
+    "jshint": "^2.5.0",
+    "browserify": "^4.1.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Felix Geisendörfer <felix@debuggable.com> (http://debuggable.com/)",
+  "license": "MIT"
+}
