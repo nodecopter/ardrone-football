@@ -4,12 +4,10 @@
   "description": "NodeCopter Drone Soccer.",
   "main": "app.js",
   "dependencies": {
-    "dronestream": "^1.1.1",
+    "dronestream": "git://github.com/felixge/node-dronestream.git#soccer",
     "send": "^0.3.0",
     "ws": "^0.4.31",
-    "ar-drone": "^0.3.2",
-    "shoe": "0.0.15",
-    "dnode": "^1.2.0"
+    "ar-drone": "^0.3.2"
   },
   "devDependencies": {
     "jshint": "^2.5.0",
