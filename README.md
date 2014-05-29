@@ -10,6 +10,10 @@ $ cd ardrone-football
 $ npm install
 ```
 
+Additionally you will need to install
+[justrun](https://github.com/jmhodges/justrun) (binary downloads available) for
+getting the frontend code to automatically rebuild on changes.
+
 ## Running
 
 ```bash
