@@ -23,6 +23,7 @@ var yPID = new PID({pGain: 0.15, iGain: 0, dGain: 0});
 var client = new WsClient();
 var state;
 setState('ground');
+var disableDetection = false;
 
 // main gets this party started.
 (function main() {
@@ -45,7 +46,7 @@ function renderLoop() {
 function frameLoop() {
   videoHistogram.tick();
 
-  if (pickedColor) {
+  if (pickedColor && !disableDetection) {
     detect();
   }
 
@@ -62,6 +63,7 @@ function detector(options) {
   var missCnt = 0;
 
   return function detect() {
+
     ns.getImageData(b);
 
     var count = 0;
@@ -215,6 +217,34 @@ function renderer() {
 
     })();
 
+    /* Input readout */
+    (function () {
+      var fontSize = 14;
+      var bars = [
+        {label: 'X', val: -client.frontBack, color: '255,0,0'},
+        {label: 'Y', val: -client.upDown, color: '0,255,0'},
+        {label: 'θ', val: -client.rotation, color: '0,0,255'}
+      ];
+      var bh = 10;
+      var yo = h/2 - ((bh + fontSize + padding) * bars.length) / 2;
+
+      bars.forEach(function (bar, i) {
+        var y = yo + i * (bh + fontSize + padding);
+        var bw = Math.abs(bar.val * 100);
+        var x = 100;
+        if (bar.val > 0) {
+          x -= bw;
+        }
+        c.fillStyle = 'rgba(' + bar.color + ',' + opacity * 2 + ')';
+        c.fillRect(x, y, bw, bh);
+
+        c.fillStyle = 'rgba(255,255,255,' + opacity + ')';
+        c.font = fontSize + 'px Arial';
+        c.fillText(bar.label, 100, y - padding);
+      });
+
+    })();
+
     renderHistograms([
       {label: 'video', values: videoHistogram.values(), limit: 1000 / 30},
       {label: 'navdata', values: navdataHistogram.values(), limit: 1000 / 15}
@@ -318,11 +348,36 @@ function setState(val) {
   state = val;
 }
 
+var turnaroundButton = document.getElementById('turnaround');
+turnaroundButton.addEventListener('click', function(){
+    client.turnaround();
+});
+
+var stopButton = document.getElementById('stop');
+stopButton.addEventListener('click', function(){
+  client.stop();
+});
+
+var disableButton = document.getElementById('disable');
+disableButton.addEventListener('click', function(){
+  if (this.textContent === 'Stop Tracking'){
+    this.textContent = 'Enable Tracking';
+    disableDetection = true;
+  } else {
+    this.textContent = 'Stop Tracking';
+    client.stop();
+    disableDetection = false;
+  }
+});
+
 var flightButton = document.getElementById('flight');
 flightButton.addEventListener('click', function () {
   if (this.textContent === 'Start') {
     setState('takeoff');
     client.on('altitudeChange', function (v) {
+      if(disableDetection){
+        return;
+      }
       if (v < 0.1) {
         this.up(0.02);
       } else if (v < 0.3) {
@@ -340,7 +395,7 @@ flightButton.addEventListener('click', function () {
     setState('follow');
     client.down(0.1);
   });
-  this.textContent = 'Stop';
+  this.textContent = 'Land';
 }
 else
 {
@@ -350,5 +405,47 @@ else
   });
   this.textContent = 'Start';
 }
-})
-;
+});
+
+var keyModifier = 1;
+var keyChange = function(old, increment){
+  var dx = keyModifier * increment;
+  var newVal = old + dx;
+  if(increment > 0){
+    newVal = Math.min(newVal, 1);
+  } else {
+    newVal = Math.max(newVal, -1);
+  }
+  if(keyModifier > 1 && old !== 0 && ((old > 0 && newVal < 0) || (old < 0 && newVal > 0))){
+    return 0;
+  }
+  return newVal;
+};
+window.onkeydown = function(ev){
+  if(ev.keyCode === 16){
+    keyModifier = 10;
+  }
+  if(ev.keyCode === 81){
+    client.up(keyChange(client.upDown, 0.1));
+  }
+  if(ev.keyCode === 90){
+   client.up(keyChange(client.upDown, -0.1));
+  }
+  if(ev.keyCode === 39){
+   client.clockwise(keyChange(client.rotation, 0.1));
+  }
+  if(ev.keyCode === 37){
+   client.clockwise(keyChange(client.rotation, -0.1));
+  }
+  if(ev.keyCode === 40){
+   client.front(keyChange(client.frontBack, -0.1));
+  }
+  if(ev.keyCode === 38){
+    client.front(keyChange(client.frontBack, 0.1));
+  }
+};
+window.onkeyup = function(ev){
+  if(ev.keyCode === 16){
+    keyModifier = 1;
+  }
+};

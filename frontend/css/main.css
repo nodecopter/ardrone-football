@@ -24,9 +24,13 @@ body{
   left: 0;
   z-index: 2;
 }
-button{
+#buttons {
   z-index: 3;
   position: absolute;
   bottom: 10px;
   left: 10px;
+}
+button{
+  z-index: 3;
+  float: left;
 }
