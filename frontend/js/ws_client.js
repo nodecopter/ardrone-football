@@ -91,6 +91,20 @@ WsClient.prototype.right = function(val) {
   this._send(['right', val]);
 };
 
+
+WsClient.prototype.down = function(val) {
+  this._send(['down', val]);
+};
+
+WsClient.prototype.up = function(val) {
+  this._send(['up', val]);
+};
+
+WsClient.prototype.front = function(val) {
+  this._send(['front', val]);
+};
+
+
 WsClient.prototype.stop = function() {
   this._send(['stop']);
 };

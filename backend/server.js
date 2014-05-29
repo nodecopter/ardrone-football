@@ -46,6 +46,15 @@ wsServer.on('connection', function(conn) {
       case 'right':
         drone.right(msg[0]);
         break;
+      case 'front':
+        drone.front(msg[0]);
+        break;
+      case 'up':
+        drone.up(msg[0]);
+        break;
+      case 'down':
+        drone.down(msg[0]);
+        break;
       case 'stop':
         drone.stop();
         break;

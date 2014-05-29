@@ -14,7 +14,7 @@ var frameBuffer = new Uint8Array(videoCanvas.width * videoCanvas.height * 4);
 var videoHistogram = new Histogram(200);
 var navdataHistogram = new Histogram(200);
 var render = renderer();
-var detect = detector({maxDiff: 0.1});
+var detect = detector({maxDiff: 0.05});
 var lastNavdata;
 var pickedColor;
 var detected;
@@ -64,15 +64,18 @@ function detector(options) {
     var count = 0;
     var xSum = 0;
     var ySum = 0;
-    for (var x = 0; x < w; x++) {
-      for (var y = 0; y < h; y++) {
-        var o = x*4+(h-y)*w*4;
+    for (var x = 1; x < w-1; x++) {
+      for (var y = 1; y < h-1; y++) {
         var match = true;
-        for (var i = 0; i < pickedColor.length; i++) {
-          var diffPercent = Math.abs(b[o+i]-pickedColor[i]) / 255;
-          if (diffPercent > maxDiff) {
-            match = false;
-            break;
+          for(var xj = -1; xj <= 1 && match; xj++) {
+            for(var yj = -1; yj <= 1 && match; yj++) {
+              var o = (x + xj)*4+(h-(y+yj))*w*4;
+              for (var i = 0; i < pickedColor.length && match; i++) {
+                var diffPercent = Math.abs(b[o+i]-pickedColor[i]) / 255;
+                if (diffPercent > maxDiff) {
+                  match = false;
+                }
+            }
           }
         }
 
@@ -88,7 +91,13 @@ function detector(options) {
     xPID.update(xVal);
 
     if (state === 'follow') {
-      client.right(-xPID.pid().sum);
+      if(xSum < 25) {
+        client.right(0.3);
+        client.front(0.0);
+      } else {
+        client.right(-xPID.pid().sum);
+        client.front(1.0);
+      }
     } else {
       client.stop();
     }
@@ -173,7 +182,7 @@ function renderer() {
         {label: 'p', val: pid.p, color: '255,0,0'},
         {label: 'i', val: pid.i, color: '0,255,0'},
         {label: 'd', val: pid.d, color: '0,0,255'},
-        {label: 'pid', val: pid.sum, color: '255,255,255'},
+        {label: 'pid', val: pid.sum, color: '255,255,255'}
       ];
       var bh = 10;
       var yo = h /2 - ((bh + fontSize + padding) * bars.length) / 2;
@@ -197,7 +206,7 @@ function renderer() {
 
     renderHistograms([
       {label: 'video', values: videoHistogram.values(), limit: 1000/30},
-      {label: 'navdata', values: navdataHistogram.values(), limit: 1000/15},
+      {label: 'navdata', values: navdataHistogram.values(), limit: 1000/15}
     ]);
 
     // battery meter
@@ -302,8 +311,15 @@ var flightButton = document.getElementById('flight');
 flightButton.addEventListener('click', function() {
   if (this.textContent === 'Start') {
     setState('takeoff');
+    client.on('altitudeChange', function(v){
+      if(v < 0.3) {
+        this.down(0);
+      }
+    });
     client.takeoff(function() {
       setState('follow');
+      client.down(1.0);
+      client.front(1.0);
     });
     this.textContent = 'Stop';
   } else {
