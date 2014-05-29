@@ -4,13 +4,17 @@ Base project for the [JSConf.us 2014 NodeCopter Football challenge](http://nodec
 
 ## Install
 
+```bash
 $ git clone https://github.com/nodecopter/ardrone-football.git
 $ cd ardrone-football
 $ npm install
+```
 
 ## Running
 
+```bash
 $ make
+```
 
 Then open your browser at [http://localhost:3000/](http://localhost:3000/).
 
