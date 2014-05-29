@@ -34,6 +34,7 @@ wsServer.on('connection', function(conn) {
         });
         break;
       case 'takeoff':
+        drone.disableEmergency();
         drone.takeoff(function() {
           send(['takeoff']);
         });
@@ -46,6 +47,23 @@ wsServer.on('connection', function(conn) {
       case 'right':
         drone.right(msg[0]);
         break;
+      case 'front':
+        drone.front(msg[0]);
+        break;
+      case 'up':
+        drone.up(msg[0]);
+        break;
+      case 'clockwise':
+        drone.clockwise(msg[0]);
+        break;  
+      case 'down':
+        drone.down(msg[0]);
+        break;
+      case 'turnaround':
+        setTimeout(function(){
+          drone.animate('turnaround', 100);          
+        }, 100);
+      break;
       case 'stop':
         drone.stop();
         break;

@@ -5,7 +5,7 @@ WATCH_FILES:=$(ALL_JSFILES) .jshintrc Makefile frontend/index.html frontend/css/
 FRONTEND_JSFILES:=$(shell find frontend/js -name '*.js')
 
 dev:
-	@justrun -c 'clear; make jshint frontend && ./backend/server.js' $(WATCH_FILES)
+	justrun -c 'clear; make jshint frontend && ./backend/server.js' $(WATCH_FILES)
 
 frontend: frontend/build/app.js frontend/build/index.html frontend/build/styles.css
 
