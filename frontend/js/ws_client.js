@@ -91,6 +91,9 @@ WsClient.prototype.right = function(val) {
   this._send(['right', val]);
 };
 
+WsClient.prototype.clockwise = function(val) {
+  this._send(['clockwise', val]);
+};
 
 WsClient.prototype.down = function(val) {
   this._send(['down', val]);

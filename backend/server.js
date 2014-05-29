@@ -52,9 +52,12 @@ wsServer.on('connection', function(conn) {
       case 'up':
         drone.up(msg[0]);
         break;
+      case 'clockwise':
+        drone.clockwise(msg[0]);
+        break;  
       case 'down':
         drone.down(msg[0]);
-        break;
+        break;  
       case 'stop':
         drone.stop();
         break;

@@ -18,7 +18,8 @@ var detect = detector({maxDiff: 0.05});
 var lastNavdata;
 var pickedColor;
 var detected;
-var xPID = new PID({pGain: 0.1, iGain: 0, dGain: 0});
+var xPID = new PID({pGain: 0.4, iGain: 0, dGain: 0});
+var yPID = new PID({pGain: 0.15, iGain: 0, dGain: 0});
 var client = new WsClient();
 var state;
 setState('ground');
@@ -88,15 +89,18 @@ function detector(options) {
     }
     detected = {x: xSum / count, y: ySum /count};
     var xVal = (detected.x - w / 2)/(w / 2);
+    var yVal = (detected.y - h / 2)/(h / 2);
     xPID.update(xVal);
+    yPID.update(yVal);
 
     if (state === 'follow') {
       if(xSum < 25) {
-        client.right(0.3);
         client.front(0.0);
+        client.down(0.25);
       } else {
-        client.right(-xPID.pid().sum);
-        client.front(1.0);
+        client.clockwise(-xPID.pid().sum);
+        client.down(-yPID.pid().sum);
+        client.front(0.25);
       }
     } else {
       client.stop();
