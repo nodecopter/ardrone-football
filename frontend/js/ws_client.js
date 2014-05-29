@@ -107,6 +107,10 @@ WsClient.prototype.front = function(val) {
   this._send(['front', val]);
 };
 
+WsClient.prototype.clockwise = function(val) {
+  this._send(['clockwise', val]);
+};
+
 
 WsClient.prototype.stop = function() {
   this._send(['stop']);
